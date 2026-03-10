@@ -106,7 +106,14 @@ export default function TarotPage() {
   const generateReading = async (cards: { card: TarotCardData, isReversed: boolean }[]) => {
     setIsReading(true);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY! });
+      const customKey = localStorage.getItem('custom_gemini_api_key');
+      const apiKey = customKey || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+
+      if (!apiKey) {
+        throw new Error('API Key não configurada.');
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
       const model = "gemini-3-flash-preview";
       
       const cardsStr = cards.map(c => `${c.card.name} (${c.isReversed ? 'Invertida' : 'Vertical'})`).join(', ');
